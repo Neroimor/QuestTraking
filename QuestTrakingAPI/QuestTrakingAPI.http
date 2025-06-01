@@ -1,0 +1,6 @@
+@QuestTrakingAPI_HostAddress = http://localhost:5163
+
+GET {{QuestTrakingAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
