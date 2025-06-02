@@ -6,9 +6,9 @@ namespace QuestTrakingAPI.Services.Interfaces
     public interface IUserServices
     {
         public Task<GeneralResponse> AddendumUserAsync(RequestUser requestUser);
-        public Task<UserResponse> GetAllUserAsync(RequestUser requestUser);
-        public Task<UserResponse> GetUserByEmailAsync(string email);
+        public Task<UserResponse<List<User>>> GetAllUserAsync();
+        public Task<UserResponse<User>> GetUserByEmailAsync(string email);
         public Task<GeneralResponse> DeleteUserByEmailAsync(string email);
-        public Task<UserResponse> UpdateUserByEmailAsync(string email, RequestUser requestUser);
+        public Task<UserResponse<User>> UpdateUserByEmailAsync(string email, RequestUser requestUser);
     }
 }
