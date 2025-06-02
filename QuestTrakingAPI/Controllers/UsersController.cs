@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using QuestTrakingAPI.DataBase.DTO;
+using QuestTrakingAPI.Services.Interfaces;
 
 namespace QuestTrakingAPI.Controllers
 {
@@ -8,9 +9,11 @@ namespace QuestTrakingAPI.Controllers
     public class UsersController : ControllerBase
     {
         private readonly ILogger<UsersController> _logger;
-        public UsersController(ILogger<UsersController> logger)
+        private readonly IUserServices _usersServices;
+        public UsersController(ILogger<UsersController> logger, IUserServices userServices)
         {
             _logger = logger;
+            _usersServices = userServices;
         }
 
         [HttpPost("add/")]
