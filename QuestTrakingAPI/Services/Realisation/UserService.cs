@@ -101,8 +101,8 @@ namespace QuestTrakingAPI.Services.Realisation
             {
                 return UserResponse<User>.Fail("User not found.");
             }
-            user.Name = requestUser.Name ?? user.Name;
-            user.Email = requestUser.Email ?? user.Email;
+            user.Name = requestUser.Name;
+            user.Email = requestUser.Email;
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
             _logger.LogInformation("User with email updated successfully.");

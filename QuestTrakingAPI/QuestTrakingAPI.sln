@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35931.197 d17.13
+VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestTrakingAPI", "QuestTrakingAPI.csproj", "{17794D5D-AE77-41B2-BDCA-A02A31783704}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestQuestTrakingApi", "..\TestQuestTrakingApi\TestQuestTrakingApi.csproj", "{5710333F-6C35-423D-99BC-18858EE136B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{17794D5D-AE77-41B2-BDCA-A02A31783704}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{17794D5D-AE77-41B2-BDCA-A02A31783704}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{17794D5D-AE77-41B2-BDCA-A02A31783704}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5710333F-6C35-423D-99BC-18858EE136B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5710333F-6C35-423D-99BC-18858EE136B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5710333F-6C35-423D-99BC-18858EE136B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5710333F-6C35-423D-99BC-18858EE136B9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -9,11 +9,9 @@ namespace QuestTrakingAPI.Controllers
     [ApiController]
     public class QuestController : ControllerBase
     {
-        private readonly ILogger<QuestController> _logger;
         private readonly IQuestServices _questServices;
-        public QuestController(ILogger<QuestController> logger, IQuestServices questServices)
+        public QuestController(IQuestServices questServices)
         {
-            _logger = logger;
             _questServices = questServices;
         }
 
