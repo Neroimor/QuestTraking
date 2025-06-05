@@ -18,43 +18,68 @@ namespace QuestTrakingAPI.Controllers
         [HttpPost("add-quest")]
         public async Task<IActionResult> AddQuest([FromBody] RequestQuest requestQuest)
         {
-            await Task.Delay(100);
+            var result = await _questServices.AddQuestAsync(requestQuest);
+            if (result.Status == 400)
+            {
+                return BadRequest(result);
+            }
 
-            return Ok();
+            return Ok(result);
         }
 
         [HttpGet("get-all")]
         public async Task<IActionResult> GetQuestsAll()
         {
-            await Task.Delay(100);
-            return Ok();
+            var result = await _questServices.GetQuestsAllAsync();
+            if (result.Status == 404)
+            {
+                return NotFound(result);
+            }
+            return Ok(result);
+
         }
 
         [HttpGet("get-by-user-email/{Email}")]
         public async Task<IActionResult> GetQuestByUserEmail(string Email)
         {
-            await Task.Delay(100);
-            return Ok();
+            var result = await _questServices.GetQuestByUserEmailAsync(Email);
+            if (result.Status == 404)
+            {
+                return NotFound(result);
+            }
+            return Ok(result);
         }
         [HttpGet("get-by-id/{Id}")]
         public async Task<IActionResult> GetQuestById(int Id)
         {
-            await Task.Delay(100);
-            return Ok();
+            var result = await _questServices.GetQuestByIdAsync(Id);
+            if (result.Status == 404)
+            {
+                return NotFound(result);
+            }
+            return Ok(result);
         }
 
         [HttpDelete("delete-by-id/{Id}")]
         public async Task<IActionResult> DeleteQuestById(int Id)
         {
-            await Task.Delay(100);
-            return Ok();
+            var result = await _questServices.DeleteQuestByIdAsync(Id);
+            if (result.Status == 404)
+            {
+                return NotFound(result);
+            }
+            return Ok(result);
         }
 
         [HttpPut("update-by-id/{Id}")]
         public async Task<IActionResult> UpdateQuestById(int Id, [FromBody] RequestQuest requestQuest)
         {
-            await Task.Delay(100);
-            return Ok();
+            var result = await _questServices.UpdateQuestByIdAsync(Id, requestQuest);
+            if (result.Status == 404)
+            {
+                return NotFound(result);
+            }
+            return Ok(result);
         }
     }
 }
