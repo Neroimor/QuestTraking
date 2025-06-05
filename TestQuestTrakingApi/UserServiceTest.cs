@@ -14,6 +14,7 @@ namespace TestQuestTrakingApi
         private readonly AppDBContext _contextMock;
         public UserServiceTest()
         {
+            
             _loggerMock = new Mock<ILogger<UserService>>();
            var options = new DbContextOptionsBuilder<AppDBContext>()
                 .UseInMemoryDatabase(databaseName: "TestDatabase")
