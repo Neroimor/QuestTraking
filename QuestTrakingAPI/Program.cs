@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using QuestTrakingAPI.DataBase.Services;
 using QuestTrakingAPI.Services.Interfaces;
@@ -17,6 +17,18 @@ builder.Services.AddScoped<IUserServices, UserService>();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDBContext>(options =>
     options.UseNpgsql(connectionString));
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        policy =>
+        {
+            policy.AllowAnyOrigin() 
+                  .AllowAnyHeader() 
+                  .AllowAnyMethod();
+        });
+});
+
 
 var app = builder.Build();
 
