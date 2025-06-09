@@ -1,0 +1,28 @@
+﻿.user-card {
+    max-width: 600px;
+    margin: 2rem auto;
+    background-color: #1c1c1c;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    padding: 1.5rem;
+}
+
+    .user-card h2 {
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+        color: #00ffcc;
+    }
+
+    .user-card p {
+        margin: 0.3rem 0;
+    }
+
+.quests ul {
+    margin-top: 0.5rem;
+    padding-left: 1.2rem;
+}
+
+.quests li {
+    margin-bottom: 0.3rem;
+    color: #cccccc;
+}

@@ -1,0 +1,37 @@
+﻿@using QuestTrakingAPI.DataBase.DTO
+@using System.Globalization
+
+<div class="user-card">
+    <div class="card">
+        <div class="card-body">
+            <h2>@user.Name</h2>
+            <p><strong>Email:</strong> @user.Email</p>
+            <p>
+                <strong>Создан:</strong>
+                @user.CreatedAt.ToString("dd.MM.yyyy HH:mm", CultureInfo.InvariantCulture)
+            </p>
+            <p><strong>Квестов:</strong> @user.Quests.Count</p>
+
+            @if (user.Quests.Any())
+            {
+                <div class="quests">
+                    <h4>Квесты:</h4>
+                    <ul>
+                        @foreach (var quest in user.Quests)
+                        {
+                            <li>
+                                <strong>@quest.Title</strong> —
+                                @(quest.IsCompleted ? "✔ Выполнен" : "⏳ В процессе")
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public User user { get; set; } = new();
+   
+}

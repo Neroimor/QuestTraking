@@ -1,11 +1,72 @@
 ﻿@page "/"
+@using QuestTrakingAPI.DataBase.DTO
+@using QuestFront.Pages.Components
+@inject HttpClient HttpClient
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<div>
 
-Welcome to your new app.
+</div>
 
-@{
+<div class="home-container">
+    <h1>Quest Tracking!</h1>
+    @if (Users.Count>0)
+    {
+        foreach (var item in Users)
+        {
+            <UsersCards user="item" />
+        }
+    }
+    
 
+</div>
+
+
+
+@code {
+    List<User> Users = new List<User>();
+    private User someUser = new User
+    {
+        Name = "Иван Иванов",
+        Email = "ivan@example.com",
+        CreatedAt = DateTime.UtcNow.AddDays(-10),
+        Quests = new List<Quest>
+        {
+            new Quest { Title = "Пройти обучение", IsCompleted = true },
+            new Quest { Title = "Создать проект", IsCompleted = false }
+        }
+    };
+
+    private User someUser2 = new User
+        {
+            Name = "Иван Иванов",
+            Email = "ivan@example.com",
+            CreatedAt = DateTime.UtcNow.AddDays(-10),
+            Quests = new List<Quest>
+        {
+            new Quest { Title = "Пройти обучение", IsCompleted = true },
+            new Quest { Title = "Создать проект", IsCompleted = false }
+        }
+        };
+    string baseUrl = "https://localhost:7189";
+    string questUrl = "/api/Quest";
+    string user = "/api/Users";
+
+    protected override async Task OnInitializedAsync()
+    {
+        Users.Add(someUser);
+        Users.Add(someUser);
+        Users.Add(someUser);
+        Users.Add(someUser);
+        Users.Add(someUser);
+        Users.Add(someUser);
+        Users.Add(someUser2);
+        Users.Add(someUser2);
+        Users.Add(someUser2);
+        Users.Add(someUser2);
+        Users.Add(someUser2);
+        Users.Add(someUser2);
+      
+    }
 }
