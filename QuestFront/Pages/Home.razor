@@ -5,21 +5,82 @@
 
 <PageTitle>Home</PageTitle>
 
-<div>
-
-</div>
 
 <div class="home-container">
     <h1>Quest Tracking!</h1>
-    @if (Users.Count>0)
+
+    <div class="forms-wrapper">
+        <!-- Форма добавления пользователя -->
+        <EditForm Model="@newUser" OnValidSubmit="HandleValidUserSubmit" class="form-container">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label for="userName">Имя</label>
+                <input id="userName"
+                       type="text"
+                       class="form-control"
+                       @bind="newUser.Name"
+                       maxlength="50"
+                       required />
+            </div>
+            <div class="form-group">
+                <label for="userEmail">Email</label>
+                <input id="userEmail"
+                       type="email"
+                       class="form-control"
+                       @bind="newUser.Email"
+                       required />
+            </div>
+            <button type="submit" class="btn">Добавить пользователя</button>
+        </EditForm>
+
+        <!-- Форма добавления задачи -->
+        <EditForm Model="@newQuest" OnValidSubmit="HandleValidQuestSubmit" class="form-container">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label for="questTitle">Заголовок</label>
+                <input id="questTitle"
+                       type="text"
+                       class="form-control"
+                       @bind="newQuest.Title"
+                       maxlength="100"
+                       required />
+            </div>
+            <div class="form-group">
+                <label for="questDescription">Описание</label>
+                <textarea id="questDescription"
+                          class="form-control"
+                          @bind="newQuest.Description"
+                          required></textarea>
+            </div>
+            <div class="form-group checkbox-group">
+                <input id="questCompleted"
+                       type="checkbox"
+                       @bind="newQuest.IsCompleted" />
+                <label for="questCompleted">Выполнено</label>
+            </div>
+            <div class="form-group">
+                <label for="questEmailUser">Email пользователя</label>
+                <input id="questEmailUser"
+                       type="email"
+                       class="form-control"
+                       @bind="newQuest.EmailUser"
+                       required />
+            </div>
+            <button type="submit" class="btn">Добавить задачу</button>
+        </EditForm>
+    </div>
+
+    @if (Users.Count > 0)
     {
         foreach (var item in Users)
         {
             <UsersCards user="item" />
         }
     }
-    
-
 </div>
 
 
@@ -56,17 +117,22 @@
     protected override async Task OnInitializedAsync()
     {
         Users.Add(someUser);
-        Users.Add(someUser);
-        Users.Add(someUser);
-        Users.Add(someUser);
-        Users.Add(someUser);
-        Users.Add(someUser);
-        Users.Add(someUser2);
-        Users.Add(someUser2);
-        Users.Add(someUser2);
-        Users.Add(someUser2);
-        Users.Add(someUser2);
         Users.Add(someUser2);
       
+    }
+    private RequestUser newUser = new();
+    private RequestQuest newQuest = new();
+    private void HandleValidUserSubmit()
+    {
+        // TODO: логика сохранения нового пользователя
+        Console.WriteLine($"Добавлен пользователь: {newUser.Name} ({newUser.Email})");
+        newUser = new RequestUser(); // очистить форму
+    }
+
+    private void HandleValidQuestSubmit()
+    {
+        // TODO: логика сохранения новой задачи
+        Console.WriteLine($"Добавлена задача: {newQuest.Title} для {newQuest.EmailUser}");
+        newQuest = new RequestQuest(); // очистить форму
     }
 }
