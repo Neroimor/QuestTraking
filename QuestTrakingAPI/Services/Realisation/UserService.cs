@@ -65,7 +65,9 @@ namespace QuestTrakingAPI.Services.Realisation
 
         public async Task<UserResponse<List<User>>> GetAllUserAsync()
         {
-            var users = await _context.Users.ToListAsync();
+            var users = await _context.Users
+     .Include(u => u.Quests)
+     .ToListAsync();
             if (users == null || users.Count == 0)
             {
                 return UserResponse<List<User>>.Fail("No users found.");

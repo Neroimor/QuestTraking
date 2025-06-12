@@ -49,19 +49,3 @@ _Фронтенд (Part 2) будет добавлен позже._
 ## Описание
 
 RESTful API для управления сущностями **Quest** и **User**.
-
----
-
-## Установка и запуск
-
-### Требования
-- [.NET 9.0 SDK](https://dotnet.microsoft.com/download)  
-- PostgreSQL  
-- Git  
-
-### Клонирование и сборка
-```bash
-git clone https://github.com/Neroimor/QuestTraking.git
-cd QuestTraking/QuestTrakingAPI
-dotnet restore
-dotnet build

@@ -1,0 +1,370 @@
+﻿@page "/"
+@using QuestTrakingAPI.DataBase.DTO
+@using QuestFront.Pages.Components
+@using QuestTrakingAPI.Response
+@using System.Text.Json
+@inject HttpClient HttpClient
+
+<PageTitle>Home</PageTitle>
+
+
+<div class="home-container">
+    <h1>Quest Tracking!</h1>
+
+    <div class="forms-wrapper">
+        <!-- Форма добавления пользователя -->
+        <EditForm Model="@newUser" OnValidSubmit="HandleValidUserSubmit" class="form-container">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label for="userName">Имя</label>
+                <input id="userName"
+                       type="text"
+                       class="form-control"
+                       @bind="newUser.Name"
+                       maxlength="50"
+                       required />
+            </div>
+            <div class="form-group">
+                <label for="userEmail">Email</label>
+                <input id="userEmail"
+                       type="email"
+                       class="form-control"
+                       @bind="newUser.Email"
+                       required />
+            </div>
+            <button type="submit" class="btn">Добавить пользователя</button>
+            <button type="button" class="btn btn-secondary" @onclick="DeleteUser">Удалить пользователя</button>
+        </EditForm>
+
+        <EditForm Model="@updUser" OnValidSubmit="HandleValidUserUpdateSubmit" class="form-container">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="form-group">
+                <label for="olduserEmail">Старый Email</label>
+                <input id="userEmail"
+                       type="email"
+                       class="form-control"
+                       @bind="newUser.Email"
+                       required />
+            </div>
+            <div class="form-group">
+                <label for="userName">Имя</label>
+                <input id="userName"
+                       type="text"
+                       class="form-control"
+                       @bind="updUser.Name"
+                       maxlength="50"
+                       required />
+            </div>
+            <div class="form-group">
+                <label for="userEmail">Email</label>
+                <input id="userEmail"
+                       type="email"
+                       class="form-control"
+                       @bind="updUser.Email"
+                       required />
+            </div>
+            <button type="submit" class="btn">Обновить пользователя</button>
+       
+        </EditForm>
+
+        <!-- Форма добавления задачи -->
+        <EditForm Model="@newQuest" OnValidSubmit="HandleValidQuestSubmit" class="form-container">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label for="questTitle">Заголовок</label>
+                <input id="questTitle"
+                       type="text"
+                       class="form-control"
+                       @bind="newQuest.Title"
+                       maxlength="100"
+                       required />
+            </div>
+            <div class="form-group">
+                <label for="questDescription">Описание</label>
+                <textarea id="questDescription"
+                          class="form-control"
+                          @bind="newQuest.Description"
+                          required></textarea>
+            </div>
+            <div class="form-group checkbox-group">
+                <input id="questCompleted"
+                       type="checkbox"
+                       @bind="newQuest.IsCompleted" />
+                <label for="questCompleted">Выполнено</label>
+            </div>
+            <div class="form-group">
+                <label for="questEmailUser">Email пользователя</label>
+                <input id="questEmailUser"
+                       type="email"
+                       class="form-control"
+                       @bind="newQuest.EmailUser"
+                       required />
+            </div>
+            <button type="submit" class="btn">Добавить задачу</button>
+            <button type="button" class="btn btn-secondary" @onclick="HandleExtraAction">Получить</button>
+            <button type="button" class="btn btn-secondary" @onclick="HandleDeleteQuest">Удалить</button>
+            <button type="button" class="btn btn-secondary" @onclick="HandlerUpdateQuest">Обновить</button>
+        </EditForm>
+    </div>
+
+    @if (Users.Count > 0)
+    {
+        foreach (var item in Users)
+        {
+            <UsersCards user="item" />
+        }
+    }
+</div>
+
+
+
+@code {
+    List<User> Users = new List<User>();
+
+    string baseUrl = "https://localhost:7014";
+    string questUrl = "/api/Quest/";
+    string userUrl = "/api/Users/";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetAllUsers();
+    }
+
+    private async Task GetAllUsers()
+    {
+
+        var relativeUrl = baseUrl + userUrl + "get-all";
+        Console.WriteLine($"GET → {relativeUrl}");
+
+
+        var httpResponse = await HttpClient.GetAsync(relativeUrl);
+        var raw = await httpResponse.Content.ReadAsStringAsync();
+
+
+        if (!httpResponse.IsSuccessStatusCode)
+        {
+            Console.WriteLine($"Ошибка при загрузке: {httpResponse.StatusCode}");
+            return;
+        }
+
+
+        var wrapper = JsonSerializer.Deserialize<UserResponse<List<User>>>(
+            raw,
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+        );
+        if (wrapper == null)
+        {
+            Console.WriteLine("Не удалось десериализовать ответ.");
+            return;
+        }
+
+        if (wrapper.Status == 200 && wrapper.Data!=null)
+            Users = wrapper.Data;
+        else
+            Console.WriteLine($"Ошибка загрузки: {wrapper.Message}");
+
+        StateHasChanged();
+    }
+
+
+
+    private async Task AddUser()
+    {
+
+        Console.WriteLine($"Добавлен пользователь: {newUser.Name} ({newUser.Email})");
+
+        var reqUser = new RequestUser
+        {
+            Name = newUser.Name,
+            Email = newUser.Email
+        };
+        string rout = "add";
+        string url = $"{baseUrl}{userUrl}{rout}";
+        var response = await HttpClient.PostAsJsonAsync(url, reqUser);
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Пользователь успешно добавлен.");
+        }
+        else
+        {
+            Console.WriteLine($"Ошибка при добавлении пользователя: {response.ReasonPhrase}");
+        }
+
+    }
+
+    private async Task UpdateUser()
+    {
+
+
+        var reqUser = new RequestUser
+        {
+            Name = updUser.Name,
+            Email = updUser.Email
+        };
+        string rout = $"update-by-email/{newUser.Email}";
+        string url = $"{baseUrl}{userUrl}{rout}";
+        var response = await HttpClient.PutAsJsonAsync(url, reqUser);
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Пользователь успешно обновлен.");
+        }
+        else
+        {
+            Console.WriteLine($"Ошибка при обновлении пользователя: {response.ReasonPhrase}");
+        }
+
+    }
+    private RequestUser newUser = new();
+    private RequestUser updUser = new();
+    private RequestQuest newQuest = new();
+    private async Task HandleValidUserSubmit()
+    {
+        await AddUser();
+        await GetAllUsers();
+        newUser = new RequestUser(); // очистить форму
+    }
+
+    private async Task HandleValidUserUpdateSubmit()
+    {
+        await UpdateUser();
+        await GetAllUsers();
+        newUser = new RequestUser(); // очистить форму
+        updUser = new RequestUser(); // очистить форму
+    }
+
+    private async Task AddQuest()
+    {
+        string url = $"{baseUrl}{questUrl}add-quest";
+        var response = await HttpClient.PostAsJsonAsync(url, newQuest);
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Задание добавлено");
+        }
+
+    }
+
+    private async Task HandleValidQuestSubmit()
+    {
+
+        await AddQuest();
+        await GetAllUsers(); 
+        newQuest = new RequestQuest(); // очистить форму
+    }
+    private async Task DeleteUser()
+    {
+        string url = $"{baseUrl}{userUrl}delete-by-email/{newUser.Email}";
+        var response = await HttpClient.DeleteAsync(url);
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Пользователь удален");
+        }
+        else
+        {
+            Console.WriteLine($"Ошибка при удалении пользователя: {response.ReasonPhrase}");
+        }
+        await GetAllUsers();
+    }
+
+    private async Task HandleDeleteQuest()
+    {
+        var quests = Users
+     .SelectMany(u => u.Quests)
+     .FirstOrDefault(q => q.Title == newQuest.Title);
+
+        if (quests == null)
+        {
+            Console.WriteLine("Задание с таким Title не найдено");
+            return;
+        }
+
+        var questId = quests.Id;
+
+        string url = $"{baseUrl}{questUrl}delete-by-id/{questId}";
+
+        var response = await HttpClient.DeleteAsync(url);
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Задание удалено");
+        }
+
+        await GetAllUsers();
+    }
+
+    private async Task HandleExtraAction()
+    {
+        var quests = Users
+         .SelectMany(u => u.Quests)             
+         .FirstOrDefault(q => q.Title == newQuest.Title);
+
+        if (quests == null)
+        {
+            Console.WriteLine("Задание с таким Title не найдено");
+            return;
+        }
+
+        var questId = quests.Id;
+
+        string url = $"{baseUrl}{questUrl}get-by-id/{questId}";
+        var response = await HttpClient.GetAsync(url);
+        if (response.IsSuccessStatusCode)
+        {
+
+            var httpResponse = await HttpClient.GetAsync(url);
+            var raw = await httpResponse.Content.ReadAsStringAsync();
+            if (!httpResponse.IsSuccessStatusCode)
+            {
+                Console.WriteLine($"Ошибка при загрузке: {httpResponse.StatusCode}");
+                return;
+            }
+
+
+            var wrapper = JsonSerializer.Deserialize<QuestResponse<Quest>>(
+                raw,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            );
+            if (wrapper != null && wrapper.Data != null)
+            {
+                var user = Users
+                    .FirstOrDefault(u => u.Id == wrapper.Data.UserId);
+
+                newQuest.EmailUser = user.Email;
+                newQuest.Title = wrapper.Data.Title;
+                newQuest.Description = wrapper.Data.Description;
+                newQuest.IsCompleted = wrapper.Data.IsCompleted;
+            }
+        }
+        else
+        {
+            Console.WriteLine($"Ошибка при получении задания: {response.ReasonPhrase}");
+        }
+    }
+
+    private async Task HandlerUpdateQuest()
+    {
+        var quests = Users
+         .SelectMany(u => u.Quests)
+         .FirstOrDefault(q => q.Title == newQuest.Title);
+        if (quests == null)
+        {
+            Console.WriteLine("Задание с таким Title не найдено");
+            return;
+        }
+        var questId = quests.Id;
+        string url = $"{baseUrl}{questUrl}update-by-id/{questId}";
+        var response = await HttpClient.PutAsJsonAsync(url, newQuest);
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Задание обновлено");
+        }
+        await GetAllUsers();
+    }
+
+
+
+    
+}

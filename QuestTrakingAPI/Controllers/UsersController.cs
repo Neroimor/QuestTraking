@@ -15,7 +15,7 @@ namespace QuestTrakingAPI.Controllers
             _usersServices = userServices;
         }
 
-        [HttpPost("add/")]
+        [HttpPost("add")]
         public async Task<IActionResult> AddUsers([FromBody] RequestUser requestUser)
         {
             var response = await _usersServices.AddendumUserAsync(requestUser);
@@ -25,7 +25,7 @@ namespace QuestTrakingAPI.Controllers
             }
             return Ok(response);
         }
-        [HttpGet("get-all/")]
+        [HttpGet("get-all")]
         public async Task<IActionResult> GetUsersAll()
         {
             var response = await _usersServices.GetAllUserAsync();
