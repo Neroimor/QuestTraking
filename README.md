@@ -1,7 +1,7 @@
 # QuestTracking API
 
 **Версия:** Part 1 (API)  
-_Фронтенд (Part 2) будет добавлен позже._
+
 
 ---
 
@@ -49,3 +49,8 @@ _Фронтенд (Part 2) будет добавлен позже._
 ## Описание
 
 RESTful API для управления сущностями **Quest** и **User**.
+
+# QuestTracking Fontend
+![image](https://github.com/user-attachments/assets/a57c62e3-df50-40e5-b2aa-8df39d96dcc0)
+
+
