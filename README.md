@@ -28,10 +28,10 @@
   - Принимает: `{ Status, Data, Message }`
 
 ### UsersController (`/api/Users`)
-- **POST /add/**  
+- **POST /add**  
   - Отправляет: `RequestUser`  
   - Принимает: `{ Status, Data, Message }`
-- **GET /get-all/**  
+- **GET /get-all**  
   - Отправляет: —  
   - Принимает: `{ Status, Data[], Message }`
 - **GET /get-by-email/{Email}**  
