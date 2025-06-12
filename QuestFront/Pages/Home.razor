@@ -37,6 +37,30 @@
             <button type="submit" class="btn">Добавить пользователя</button>
         </EditForm>
 
+        <EditForm Model="@updUser" OnValidSubmit="HandleValidUserUpdateSubmit" class="form-container">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label for="userName">Имя</label>
+                <input id="userName"
+                       type="text"
+                       class="form-control"
+                       @bind="updUser.Name"
+                       maxlength="50"
+                       required />
+            </div>
+            <div class="form-group">
+                <label for="userEmail">Email</label>
+                <input id="userEmail"
+                       type="email"
+                       class="form-control"
+                       @bind="updUser.Email"
+                       required />
+            </div>
+            <button type="submit" class="btn">Обновить пользователя</button>
+        </EditForm>
+
         <!-- Форма добавления задачи -->
         <EditForm Model="@newQuest" OnValidSubmit="HandleValidQuestSubmit" class="form-container">
             <DataAnnotationsValidator />
@@ -101,7 +125,7 @@
 
     private async Task GetAllUsers()
     {
- 
+
         var relativeUrl = baseUrl + userUrl + "get-all";
         Console.WriteLine($"GET → {relativeUrl}");
 
@@ -116,7 +140,7 @@
             return;
         }
 
-      
+
         var wrapper = JsonSerializer.Deserialize<UserResponse<List<User>>>(
             raw,
             new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
@@ -127,7 +151,7 @@
             return;
         }
 
-        if (wrapper.Status == 200)
+        if (wrapper.Status == 200 && wrapper.Data!=null)
             Users = wrapper.Data;
         else
             Console.WriteLine($"Ошибка загрузки: {wrapper.Message}");
@@ -160,18 +184,63 @@
         }
 
     }
+
+    private async Task UpdateUser()
+    {
+
+
+        var reqUser = new RequestUser
+        {
+            Name = updUser.Name,
+            Email = updUser.Email
+        };
+        string rout = $"update-by-email/{newUser.Email}";
+        string url = $"{baseUrl}{userUrl}{rout}";
+        var response = await HttpClient.PutAsJsonAsync(url, reqUser);
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Пользователь успешно обновлен.");
+        }
+        else
+        {
+            Console.WriteLine($"Ошибка при обновлении пользователя: {response.ReasonPhrase}");
+        }
+
+    }
     private RequestUser newUser = new();
+    private RequestUser updUser = new();
     private RequestQuest newQuest = new();
     private async Task HandleValidUserSubmit()
     {
         await AddUser();
         await GetAllUsers();
+        newUser = new RequestUser(); // очистить форму
     }
 
-    private void HandleValidQuestSubmit()
+    private async Task HandleValidUserUpdateSubmit()
     {
-        // TODO: логика сохранения новой задачи
-        Console.WriteLine($"Добавлена задача: {newQuest.Title} для {newQuest.EmailUser}");
+        await UpdateUser();
+        await GetAllUsers();
+        newUser = new RequestUser(); // очистить форму
+        updUser = new RequestUser(); // очистить форму
+    }
+
+    private async Task AddQuest()
+    {
+        string url = $"{baseUrl}{questUrl}add-quest";
+        var response = await HttpClient.PostAsJsonAsync(url, newQuest);
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Задание добавлено");
+        }
+
+    }
+
+    private async Task HandleValidQuestSubmit()
+    {
+        
+        await AddQuest();
+        await GetAllUsers(); 
         newQuest = new RequestQuest(); // очистить форму
     }
 }
