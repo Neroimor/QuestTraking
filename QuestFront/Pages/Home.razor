@@ -35,6 +35,7 @@
                        required />
             </div>
             <button type="submit" class="btn">Добавить пользователя</button>
+           
         </EditForm>
 
         <EditForm Model="@updUser" OnValidSubmit="HandleValidUserUpdateSubmit" class="form-container">
@@ -97,6 +98,8 @@
                        required />
             </div>
             <button type="submit" class="btn">Добавить задачу</button>
+            <button type="button" class="btn btn-secondary" @onclick="HandleExtraAction">Получить</button>
+            <button type="button" class="btn btn-secondary" @onclick="HandleDeleteQuest">Удалить</button>
         </EditForm>
     </div>
 
@@ -243,4 +246,80 @@
         await GetAllUsers(); 
         newQuest = new RequestQuest(); // очистить форму
     }
+
+    private async Task HandleDeleteQuest()
+    {
+        var quests = Users
+     .SelectMany(u => u.Quests)
+     .FirstOrDefault(q => q.Title == newQuest.Title);
+
+        if (quests == null)
+        {
+            Console.WriteLine("Задание с таким Title не найдено");
+            return;
+        }
+
+        var questId = quests.Id;
+
+        string url = $"{baseUrl}{questUrl}delete-by-id/{questId}";
+
+        var response = await HttpClient.DeleteAsync(url);
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Задание удалено");
+        }
+
+        await GetAllUsers();
+    }
+
+    private async Task HandleExtraAction()
+    {
+        var quests = Users
+         .SelectMany(u => u.Quests)             
+         .FirstOrDefault(q => q.Title == newQuest.Title);
+
+        if (quests == null)
+        {
+            Console.WriteLine("Задание с таким Title не найдено");
+            return;
+        }
+
+        var questId = quests.Id;
+
+        string url = $"{baseUrl}{questUrl}get-by-id/{questId}";
+        var response = await HttpClient.GetAsync(url);
+        if (response.IsSuccessStatusCode)
+        {
+
+            var httpResponse = await HttpClient.GetAsync(url);
+            var raw = await httpResponse.Content.ReadAsStringAsync();
+            if (!httpResponse.IsSuccessStatusCode)
+            {
+                Console.WriteLine($"Ошибка при загрузке: {httpResponse.StatusCode}");
+                return;
+            }
+
+
+            var wrapper = JsonSerializer.Deserialize<QuestResponse<Quest>>(
+                raw,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            );
+            if (wrapper != null && wrapper.Data != null)
+            {
+                var user = Users
+                    .FirstOrDefault(u => u.Id == wrapper.Data.UserId);
+
+                newQuest.EmailUser = user.Email;
+                newQuest.Title = wrapper.Data.Title;
+                newQuest.Description = wrapper.Data.Description;
+                newQuest.IsCompleted = wrapper.Data.IsCompleted;
+            }
+        }
+        else
+        {
+            Console.WriteLine($"Ошибка при получении задания: {response.ReasonPhrase}");
+        }
+    }
+
+    
 }
