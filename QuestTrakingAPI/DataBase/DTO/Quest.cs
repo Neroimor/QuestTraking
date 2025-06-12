@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace QuestTrakingAPI.DataBase.DTO
 {
@@ -19,6 +20,7 @@ namespace QuestTrakingAPI.DataBase.DTO
         public int UserId { get; set; }
 
         [ForeignKey("UserId")]
+        [JsonIgnore]
         public User? User { get; set; }
     }
 }

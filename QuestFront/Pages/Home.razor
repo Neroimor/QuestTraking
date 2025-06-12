@@ -35,13 +35,20 @@
                        required />
             </div>
             <button type="submit" class="btn">Добавить пользователя</button>
-           
+            <button type="button" class="btn btn-secondary" @onclick="DeleteUser">Удалить пользователя</button>
         </EditForm>
 
         <EditForm Model="@updUser" OnValidSubmit="HandleValidUserUpdateSubmit" class="form-container">
             <DataAnnotationsValidator />
             <ValidationSummary />
-
+            <div class="form-group">
+                <label for="olduserEmail">Старый Email</label>
+                <input id="userEmail"
+                       type="email"
+                       class="form-control"
+                       @bind="newUser.Email"
+                       required />
+            </div>
             <div class="form-group">
                 <label for="userName">Имя</label>
                 <input id="userName"
@@ -60,6 +67,7 @@
                        required />
             </div>
             <button type="submit" class="btn">Обновить пользователя</button>
+       
         </EditForm>
 
         <!-- Форма добавления задачи -->
@@ -100,6 +108,7 @@
             <button type="submit" class="btn">Добавить задачу</button>
             <button type="button" class="btn btn-secondary" @onclick="HandleExtraAction">Получить</button>
             <button type="button" class="btn btn-secondary" @onclick="HandleDeleteQuest">Удалить</button>
+            <button type="button" class="btn btn-secondary" @onclick="HandlerUpdateQuest">Обновить</button>
         </EditForm>
     </div>
 
@@ -241,10 +250,24 @@
 
     private async Task HandleValidQuestSubmit()
     {
-        
+
         await AddQuest();
         await GetAllUsers(); 
         newQuest = new RequestQuest(); // очистить форму
+    }
+    private async Task DeleteUser()
+    {
+        string url = $"{baseUrl}{userUrl}delete-by-email/{newUser.Email}";
+        var response = await HttpClient.DeleteAsync(url);
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Пользователь удален");
+        }
+        else
+        {
+            Console.WriteLine($"Ошибка при удалении пользователя: {response.ReasonPhrase}");
+        }
+        await GetAllUsers();
     }
 
     private async Task HandleDeleteQuest()
@@ -320,6 +343,28 @@
             Console.WriteLine($"Ошибка при получении задания: {response.ReasonPhrase}");
         }
     }
+
+    private async Task HandlerUpdateQuest()
+    {
+        var quests = Users
+         .SelectMany(u => u.Quests)
+         .FirstOrDefault(q => q.Title == newQuest.Title);
+        if (quests == null)
+        {
+            Console.WriteLine("Задание с таким Title не найдено");
+            return;
+        }
+        var questId = quests.Id;
+        string url = $"{baseUrl}{questUrl}update-by-id/{questId}";
+        var response = await HttpClient.PutAsJsonAsync(url, newQuest);
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Задание обновлено");
+        }
+        await GetAllUsers();
+    }
+
+
 
     
 }
